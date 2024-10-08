@@ -1,6 +1,6 @@
 <template>
     <div>
-        <toolbar v-if="modeler != null" :toolbar-style="toolbarStyle" :title="toolbarTitle"/>
+        <toolbar v-if="modeler != null" :modeler="modeler" :toolbar-style="toolbarStyle" :title="toolbarTitle"/>
         <div id="bpmn-container" :style="{
             width: '100%',
             position: 'relative',
@@ -36,10 +36,7 @@ export default {
             type: String,
             default: 'Easy-Flowable流程设计器'
         },
-        height: {
-            type: Number,
-            default: 60
-        },
+        height: [String, Number],
         align: {
             validate: (value) => ['default', 'align'].indexOf(value) !== -1,
             default: 'default'
@@ -70,7 +67,7 @@ export default {
     mounted() {
         const bpmn = new BpmnModeler({
             container: '#bpmn-container',
-            height: `${this.height}vh`,
+            height: `${this.height || 60}vh`,
             additionalModules: [zhTranslateModule],
             keyboard: {
                 bindTo: document
