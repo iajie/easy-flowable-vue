@@ -1,0 +1,1 @@
+export { zhTranslateModule } from './translate';

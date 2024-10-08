@@ -1,21 +1,26 @@
 <template>
-    <div id="bpmn-container" :style="{
-        width: '100%',
-        height: '95%',
-        position: 'relative',
-        ...bpmnDefaultStyle,
-        ...bpmnStyle
-    }"/>
+    <div>
+        <toolbar v-if="modeler != null" :toolbar-style="toolbarStyle" :title="toolbarTitle"/>
+        <div id="bpmn-container" :style="{
+            width: '100%',
+            position: 'relative',
+            ...bpmnDefaultStyle,
+            ...bpmnStyle
+        }"/>
+    </div>
+
 </template>
 <script>
 import "bpmn-js/dist/assets/bpmn-js.css";
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
+import { zhTranslateModule } from './modules';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import {bpmnDefaultStyle, xmlStr} from './props';
-
+import Toolbar from "./Toolbar";
 export default {
     name: 'EasyFlowable',
+    components: { Toolbar },
     props: {
         bpmnStyle: {
             type: Object,
@@ -33,7 +38,7 @@ export default {
         },
         height: {
             type: Number,
-            default: 85
+            default: 60
         },
         align: {
             validate: (value) => ['default', 'align'].indexOf(value) !== -1,
@@ -66,6 +71,7 @@ export default {
         const bpmn = new BpmnModeler({
             container: '#bpmn-container',
             height: `${this.height}vh`,
+            additionalModules: [zhTranslateModule],
             keyboard: {
                 bindTo: document
             },
