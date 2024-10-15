@@ -1,6 +1,14 @@
 <template>
     <div>
-        <toolbar v-if="modeler != null" :modeler="modeler" :toolbar-style="toolbarStyle" :title="toolbarTitle"/>
+        <toolbar
+            v-if="modeler != null"
+            :modeler="modeler"
+            :is-base64="toolbarBase64"
+            :toolbar-style="toolbarStyle"
+            :bpmn-data="bpmnData"
+            @save="(data) => this.$emit('save', data)"
+            @uploadXml="changeValue"
+            :title="toolbarTitle"/>
         <div id="bpmn-container" :style="{
             width: '100%',
             position: 'relative',
@@ -24,8 +32,7 @@ export default {
     props: {
         bpmnStyle: {
             type: Object,
-            default: () => {
-            }
+            default: () => {}
         },
         toolbarStyle: {
             type: Object,
@@ -36,6 +43,7 @@ export default {
             type: String,
             default: 'Easy-Flowable流程设计器'
         },
+        toolbarBase64: [Boolean],
         height: [String, Number],
         align: {
             validate: (value) => ['default', 'align'].indexOf(value) !== -1,
@@ -43,7 +51,7 @@ export default {
         },
         value: {
             type: String,
-            default: xmlStr()
+            default: () => xmlStr()
         },
         flowKey: {
             type: String,
@@ -61,7 +69,10 @@ export default {
     data() {
         return {
             bpmnDefaultStyle,
-            modeler: null
+            modeler: null,
+            bpmnData: {
+                name: this.flowName, description: '', author: this.author
+            },
         }
     },
     mounted() {
@@ -95,7 +106,12 @@ export default {
         });
         this.modeler = bpmn;
         // 装载xml
-        bpmn.importXML(this.value).then(() => {
+        let value = this.value;
+        if (!this.value) {
+            value = xmlStr();
+            this.changeValue(value);
+        }
+        bpmn.importXML(value).then(() => {
             console.log("import xml success!")
         }).catch((err) => console.log("import xml error: ", err))
     },
@@ -110,7 +126,12 @@ export default {
             immediate: true
         }
     },
-    methods: {}
+    methods: {
+        changeValue(value) {
+            this.$emit('input', value);
+            this.$emit('on-change', value);
+        }
+    }
 }
 </script>
 <style scoped>
