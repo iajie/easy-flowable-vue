@@ -22,7 +22,7 @@
                 </Upload>
             </Popover>
             <Popover content="预览">
-                <Button icon="eye"/>
+                <Button @click="viewFile" icon="eye" />
             </Popover>
             <Popover v-model="visible" trigger="click">
                 <template #content>
@@ -37,6 +37,7 @@
             </Popover>
             <Button type="link" style="color: GrayText" size="large">{{ title }}</Button>
         </Space>
+
     </div>
 </template>
 <script>
@@ -46,6 +47,8 @@ import Button from 'ant-design-vue/lib/button';
 import Space from 'ant-design-vue/lib/space';
 import Popover from 'ant-design-vue/lib/popover';
 import Upload from 'ant-design-vue/lib/upload';
+import Modal from 'ant-design-vue/lib/modal';
+import Message from 'ant-design-vue/lib/message';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
 export default {
@@ -72,6 +75,7 @@ export default {
              * 是否显示气泡
              */
             visible: false,
+            viewVisible: false,
             zoomValue: 1
         }
     },
@@ -171,6 +175,22 @@ export default {
                 };
             }
             return false;
+        },
+        viewFile() {
+            this.modeler.saveXML({format: true}).then(({xml}) => {
+                if (xml) {
+                    Modal.confirm({
+                        centered: true, icon: 'copy', width: '60%',
+                        title: 'XML源码预览', okText: '复制', cancelText: '返回',
+                        content: xml,
+                        onOk: async () => {
+                            await navigator.clipboard.writeText(xml);
+                            await Message.success('复制成功！');
+                            return false;
+                        }
+                    });
+                }
+            });
         }
     }
 }
