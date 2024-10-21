@@ -79,7 +79,20 @@ export default {
             zoomValue: 1
         }
     },
+    mounted() {
+        // 加载完成添加键盘监听
+        document.addEventListener('keydown', this.saveKey);
+    },
+    beforeDestroy() {
+        document.removeEventListener('keydown', this.saveKey);
+    },
     methods: {
+        saveKey(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                this.onSave();
+            }
+        },
         downloadXml() {
             this.modeler.saveXML({format: true}).then(({xml}) => {
                 if (xml) {

@@ -20,7 +20,6 @@ export default {
     },
     methods: {
         save(data) {
-            console.log(this.xml);
             console.log(data)
         }
     }
