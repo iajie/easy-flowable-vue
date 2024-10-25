@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="width: 100%; overflow: hidden;position: relative">
         <toolbar
             v-if="modeler != null"
             :modeler="modeler"
@@ -9,12 +9,8 @@
             @save="(data) => this.$emit('save', data)"
             @uploadXml="changeValue"
             :title="toolbarTitle"/>
-        <div id="bpmn-container" :style="{
-            width: '100%',
-            position: 'relative',
-            ...bpmnDefaultStyle,
-            ...bpmnStyle
-        }"/>
+        <div id="bpmn-container" :style="{ ...bpmnDefaultStyle, ...bpmnStyle }"/>
+        <properties-panel v-if="modeler != null" :modeler="modeler" @bpmn-change="bpmnInfoChange"/>
     </div>
 
 </template>
@@ -26,9 +22,10 @@ import { zhTranslateModule } from './modules';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 import {bpmnDefaultStyle, xmlStr} from './props';
 import Toolbar from "./Toolbar";
+import PropertiesPanel from "./PropertiesPanel";
 export default {
     name: 'EasyFlowable',
-    components: { Toolbar },
+    components: { Toolbar, PropertiesPanel },
     props: {
         bpmnStyle: {
             type: Object,
@@ -130,6 +127,9 @@ export default {
         changeValue(value) {
             this.$emit('input', value);
             this.$emit('on-change', value);
+        },
+        bpmnInfoChange(value) {
+            this.bpmnData = { ...this.bpmnData, ...value };
         }
     }
 }
